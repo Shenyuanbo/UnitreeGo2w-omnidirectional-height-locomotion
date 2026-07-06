@@ -33,7 +33,7 @@ from robot_lab.assets.unitree import UNITREE_GO2W_CFG  # isort: skip
 
 DEFAULT_BASE_HEIGHT = 0.40
 FINAL_HEIGHT_RANGE = (0.32, 0.43)
-INITIAL_HEIGHT_RANGE = (0.38, 0.43)
+INITIAL_HEIGHT_RANGE = (0.37, 0.43)
 STAGE_A_HEIGHT_RANGE = (DEFAULT_BASE_HEIGHT, DEFAULT_BASE_HEIGHT)
 
 # ------------------------重写Command模块，加入高度command----------------------------------
@@ -166,15 +166,21 @@ def height_command_levels(
     reward_term_name: str,
     initial_range: tuple[float, float] = INITIAL_HEIGHT_RANGE,
     final_range: tuple[float, float] = FINAL_HEIGHT_RANGE,
-    range_step: float = 0.005,
+    range_step: float = 0.002,
     success_threshold: float = 0.75,
+    success_streak: int = 1,
 ) -> torch.Tensor:
-    """Expand the sampled height-command range when height tracking is good."""
+    """Expand the sampled height-command range after repeated successful height tracking."""
 
     height_command_cfg = env.command_manager.get_term(command_name).cfg
+    streak_attr = "_height_command_curriculum_success_streak"
 
     if env.common_step_counter == 0:
         height_command_cfg.height_range = initial_range
+        setattr(env, streak_attr, 0)
+
+    if not hasattr(env, streak_attr):
+        setattr(env, streak_attr, 0)
 
     if env.common_step_counter % env.max_episode_length == 0:
         episode_sums = env.reward_manager._episode_sums[reward_term_name]
@@ -182,10 +188,16 @@ def height_command_levels(
         reward_rate = torch.mean(episode_sums[env_ids]) / env.max_episode_length_s
 
         if reward_rate > success_threshold * reward_term_cfg.weight:
+            setattr(env, streak_attr, getattr(env, streak_attr) + 1)
+        else:
+            setattr(env, streak_attr, 0)
+
+        if getattr(env, streak_attr) >= success_streak:
             low, high = height_command_cfg.height_range
             new_low = max(final_range[0], low - range_step)
             new_high = min(final_range[1], high + range_step)
             height_command_cfg.height_range = (new_low, new_high)
+            setattr(env, streak_attr, 0)
 
     low, high = height_command_cfg.height_range
     return torch.tensor(high - low, device=env.device)
@@ -449,7 +461,7 @@ class UnitreeGo2WHeightEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.joint_vel_wheel_l2.params["asset_cfg"].joint_names = self.wheel_joint_names
         self.rewards.joint_acc_l2.params["asset_cfg"].joint_names = self.leg_joint_names
         self.rewards.joint_acc_wheel_l2.params["asset_cfg"].joint_names = self.wheel_joint_names
-        # self.rewards.create_joint_deviation_l1_rewterm("joint_deviation_hip_l1", -0.2, [".*_hip_joint"])
+        self.rewards.create_joint_deviation_l1_rewterm("joint_deviation_hip_l1", -0.2, [".*_hip_joint"])
         self.rewards.joint_pos_limits.params["asset_cfg"].joint_names = self.leg_joint_names
         self.rewards.joint_vel_limits.params["asset_cfg"].joint_names = self.wheel_joint_names
         self.rewards.joint_power.params["asset_cfg"].joint_names = self.leg_joint_names
@@ -532,8 +544,9 @@ class UnitreeGo2WHeightEnvCfg(LocomotionVelocityRoughEnvCfg):
                 "reward_term_name": "track_base_height_command_exp",
                 "initial_range": INITIAL_HEIGHT_RANGE,
                 "final_range": FINAL_HEIGHT_RANGE,
-                "range_step": 0.005,
+                "range_step": 0.002,
                 "success_threshold": 0.75,
+                "success_streak": 1,
             },
         )
 

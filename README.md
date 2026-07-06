@@ -1,3 +1,40 @@
+# Unitree Go2W Omnidirectional Height Locomotion
+
+This repository contains my IsaacLab/RobotLab research environment for Unitree Go2W wheeled-quadruped locomotion. The project extends RobotLab with a continuous commanded base-height task on top of omnidirectional velocity control.
+
+## Project Highlights
+
+- Added a Go2W height-control task: `RobotLab-Isaac-Velocity-Height-Unitree-Go2W-v0`.
+- Implemented a continuous `base_height` command and exposed it to policy and critic observations.
+- Added base-height tracking reward and height-command curriculum for staged training.
+- Preserved omnidirectional locomotion commands: forward/backward velocity, lateral velocity, and yaw velocity.
+- Used staged training: first flat omnidirectional locomotion, then resumed training for dynamic base-height control.
+- Training artifacts such as logs, checkpoints, videos, wandb outputs, and notebooks checkpoints are ignored by git.
+
+## Main Modified Areas
+
+- `source/robot_lab/robot_lab/tasks/manager_based/locomotion/velocity/config/wheeled/unitree_go2w/height_env_cfg.py`
+- `source/robot_lab/robot_lab/tasks/manager_based/locomotion/velocity/config/wheeled/unitree_go2w/agents/`
+- `source/robot_lab/robot_lab/tasks/manager_based/locomotion/velocity/mdp/commands.py`
+- `source/robot_lab/robot_lab/tasks/manager_based/locomotion/velocity/mdp/curriculums.py`
+- `train.sh` and `play.sh` for repeatable training/playback commands.
+
+## Example Usage
+
+```bash
+# Train the Go2W height-control task
+./train.sh
+
+# Play a trained checkpoint
+./play.sh
+```
+
+## Upstream
+
+This work is based on [RobotLab](https://github.com/fan-ziqi/robot_lab). The original RobotLab README is preserved below for dependency and installation details.
+
+---
+
 # robot_lab
 
 [![IsaacSim](https://img.shields.io/badge/IsaacSim-5.0.0-silver.svg)](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html)

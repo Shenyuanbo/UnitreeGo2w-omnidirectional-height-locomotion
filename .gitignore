@@ -29,6 +29,16 @@
 docker/artifacts/
 *.tmp
 
+# Training artifacts and notebooks
+**/.ipynb_checkpoints/
+*.pt
+*.pth
+*.onnx
+*.mp4
+*.avi
+*.mkv
+events.out.tfevents*
+
 # Isaac-Sim packman
 _isaac_sim*
 _repo

@@ -48,3 +48,18 @@ class UnitreeGo2WFlatTrainerCfg(UnitreeGo2WRoughTrainerCfg):
         super().__post_init__()
         self.max_iterations = 5000
         self.experiment_name = "unitree_go2w_flat"
+
+@configclass 
+class UnitreeGo2WCrawlTrainerCfg(UnitreeGo2WRoughTrainerCfg):
+    def __post_init__(self):   
+        super().__post_init__()
+        self.max_iterations = 20000
+        self.experiment_name = "unitree_go2w_crawl"
+
+
+@configclass 
+class UnitreeGo2WHeightTrainerCfg(UnitreeGo2WRoughTrainerCfg):
+    def __post_init__(self):   
+        super().__post_init__()
+        self.max_iterations = 20000
+        self.experiment_name = "unitree_go2w_height"

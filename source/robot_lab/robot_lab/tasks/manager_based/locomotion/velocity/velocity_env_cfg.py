@@ -11,16 +11,18 @@ import math
 import sys
 from dataclasses import MISSING
 
-import isaaclab.sim as sim_utils
-from isaaclab.assets import ArticulationCfg, AssetBaseCfg
-from isaaclab.envs import ManagerBasedRLEnvCfg
-from isaaclab.managers import CurriculumTermCfg as CurrTerm
-from isaaclab.managers import EventTermCfg as EventTerm
+import isaaclab.sim as sim_utils #物理仿真相关配置，比如刚体，流体，碰撞相关的配置
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg #关节机器人，普通物体的相关配置
+from isaaclab.envs import ManagerBasedRLEnvCfg #强化学习环境配置
+
+from isaaclab.managers import CurriculumTermCfg as CurrTerm # 课程学习配置：比如先学平地，再学坡地，最后学复杂地形
+from isaaclab.managers import EventTermCfg as EventTerm # 环境随机事件配置，比如推一下机器人，摩擦力改变等
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
 from isaaclab.managers import ObservationTermCfg as ObsTerm
-from isaaclab.managers import RewardTermCfg as RewTerm
-from isaaclab.managers import SceneEntityCfg
-from isaaclab.managers import TerminationTermCfg as DoneTerm
+from isaaclab.managers import RewardTermCfg as RewTerm # 奖励配置，指一个reward项
+from isaaclab.managers import SceneEntityCfg  # 场景实体配置，指一个场景中的物体，比如机器人，地面等
+from isaaclab.managers import TerminationTermCfg as DoneTerm # 中止配置
+
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors import ContactSensorCfg, RayCasterCfg, patterns
 from isaaclab.terrains import TerrainImporterCfg
@@ -48,11 +50,11 @@ class MySceneCfg(InteractiveSceneCfg):
     # ground terrain
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
-        terrain_type="generator",
-        terrain_generator=ROUGH_TERRAINS_CFG,
-        max_init_terrain_level=5,
-        collision_group=-1,
-        physics_material=sim_utils.RigidBodyMaterialCfg(
+        terrain_type="generator", # 地形类型为生成器
+        terrain_generator=ROUGH_TERRAINS_CFG, # 地形生成器配置，使用预定义的ROUGH_TERRAINS_CFG
+        max_init_terrain_level=5, # 最大初始地形等级为5
+        collision_group=-1, # 碰撞组为-1，表示默认碰撞组
+        physics_material=sim_utils.RigidBodyMaterialCfg( 
             friction_combine_mode="multiply",
             restitution_combine_mode="multiply",
             static_friction=1.0,
@@ -106,8 +108,8 @@ class CommandsCfg:
 
     base_velocity = mdp.UniformThresholdVelocityCommandCfg(
         asset_name="robot",
-        resampling_time_range=(10.0, 10.0),
-        rel_standing_envs=0.02,
+        resampling_time_range=(10.0, 10.0), # 命令重新采样时间范围为10秒到10秒
+        rel_standing_envs=0.02,  # 2%的环境给出0速度command，为了训练机械狗的stand still
         rel_heading_envs=1.0,
         heading_command=True,
         heading_control_stiffness=0.5,

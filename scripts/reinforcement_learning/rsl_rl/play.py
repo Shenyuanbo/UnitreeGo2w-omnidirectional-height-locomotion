@@ -41,6 +41,7 @@ parser.add_argument(
 )
 parser.add_argument("--real-time", action="store_true", default=False, help="Run in real-time, if possible.")
 parser.add_argument("--keyboard", action="store_true", default=False, help="Whether to use keyboard.")
+parser.add_argument("--follow-camera", "--follow_camera", action="store_true", default=False, help="Keep the viewport camera tracking env 0 during play/recording.")
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
@@ -201,6 +202,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # reset environment
     obs, _ = env.get_observations()
+    if args_cli.keyboard or args_cli.follow_camera:
+        camera_follow(env)
     timestep = 0
     # simulate environment
     while simulation_app.is_running():
@@ -218,7 +221,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
             if timestep == args_cli.video_length:
                 break
 
-        if args_cli.keyboard:
+        if args_cli.keyboard or args_cli.follow_camera:
             camera_follow(env)
 
         # time delay for real-time evaluation

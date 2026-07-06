@@ -9,7 +9,6 @@ This repository contains my IsaacLab/RobotLab research environment for Unitree G
 - Added base-height tracking reward and height-command curriculum for staged training.
 - Preserved omnidirectional locomotion commands: forward/backward velocity, lateral velocity, and yaw velocity.
 - Used staged training: first flat omnidirectional locomotion, then resumed training for dynamic base-height control.
-- Training artifacts such as logs, checkpoints, videos, wandb outputs, and notebooks checkpoints are ignored by git.
 
 ## Main Modified Areas
 

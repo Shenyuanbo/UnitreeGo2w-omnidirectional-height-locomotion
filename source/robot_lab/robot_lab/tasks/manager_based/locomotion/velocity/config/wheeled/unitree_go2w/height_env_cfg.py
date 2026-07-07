@@ -435,9 +435,9 @@ class UnitreeGo2WHeightEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.undesired_contacts.weight = -1.0
         self.rewards.contact_forces.weight = -1.5e-4
 
-        self.rewards.track_lin_vel_xy_exp.weight = 3.0
-        self.rewards.track_ang_vel_z_exp.weight = 1.5
-        self.rewards.track_base_height_command_exp.weight = 1.6
+        self.rewards.track_lin_vel_xy_exp.weight = 3.4
+        self.rewards.track_ang_vel_z_exp.weight = 1.6
+        self.rewards.track_base_height_command_exp.weight = 2.0
 
         self.rewards.feet_air_time.weight = 0
         self.rewards.feet_contact.weight = 0
@@ -461,7 +461,7 @@ class UnitreeGo2WHeightEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.joint_vel_wheel_l2.params["asset_cfg"].joint_names = self.wheel_joint_names
         self.rewards.joint_acc_l2.params["asset_cfg"].joint_names = self.leg_joint_names
         self.rewards.joint_acc_wheel_l2.params["asset_cfg"].joint_names = self.wheel_joint_names
-        self.rewards.create_joint_deviation_l1_rewterm("joint_deviation_hip_l1", -0.2, [".*_hip_joint"])
+        self.rewards.create_joint_deviation_l1_rewterm("joint_deviation_hip_l1", -0.22, [".*_hip_joint"])
         self.rewards.joint_pos_limits.params["asset_cfg"].joint_names = self.leg_joint_names
         self.rewards.joint_vel_limits.params["asset_cfg"].joint_names = self.wheel_joint_names
         self.rewards.joint_power.params["asset_cfg"].joint_names = self.leg_joint_names
